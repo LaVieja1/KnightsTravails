@@ -1,23 +1,39 @@
-const squareRegistry = new Map();
-
-const ChessSquare = (x, y) => {
-    const xPos = x;
-    const yPos = y;
-    let predecessor;
-
-    const KNIGHT_OFFSETS = [
-        [1, 2], [1, -2],
-        [2, 1], [2, -1],
-        [-1, 2], [-1, -2],
-        [-2, 1], [-2, -1]
-    ]
-
-    const getPredecessor = () => predecessor;
-    const setPredecessor = (newPred) => { predecessor ||= newPred }
-
-    const name = () => `${x}, ${y}`;
-
-    const createKnightMoves = () => {
-        return KNIGHT_OFFSETS.map(newSquareFrom).filter(Boolean);
+function Node(pos, path) {
+    if (pos[0] < 0 || pos[0] > 7 || pos[1] < 0 || pos[1] > 7) {
+        return null;
     }
+    return { pos, path };
 }
+
+function knightMoves([x, y], [a, b]) {
+    let q = [Node([x, y], [[x, y]])];
+    let currentNode = q.shift();
+
+    while (currentNode.pos[0] !== a || currentNode.pos[1] !== b) {
+        let moves = [
+            [currentNode.pos[0] + 2, currentNode.pos[1] - 1],
+            [currentNode.pos[0] + 2, currentNode.pos[1] + 1],
+            [currentNode.pos[0] - 2, currentNode.pos[1] - 1],
+            [currentNode.pos[0] - 2, currentNode.pos[1] + 1],
+            [currentNode.pos[0] + 1, currentNode.pos[1] - 2],
+            [currentNode.pos[0] + 1, currentNode.pos[1] + 2],
+            [currentNode.pos[0] - 1, currentNode.pos[1] - 2],
+            [currentNode.pos[0] - 1, currentNode.pos[1] + 2],
+        ];
+        moves.forEach((move) => {
+            let node = Node(move, currentNode.path.concat([move]));
+            if (node) {
+                q.push(node);
+            }
+        });
+        currentNode = q.shift();
+    }
+
+    console.log(`=> Lo hiciste en ${currentNode.path.length - 1} movimientos!  Este fue el recorrido:`);
+    
+    currentNode.path.forEach((pos) => {
+        console.log(pos);
+    });
+}
+
+module.exports = knightMoves;
